@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,16 +50,35 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        medical: {
+          primary: "hsl(var(--medical-primary))",
+          "primary-foreground": "hsl(var(--medical-primary-foreground))",
+          secondary: "hsl(var(--medical-secondary))",
+          "secondary-foreground": "hsl(var(--medical-secondary-foreground))",
         },
+        citation: {
+          DEFAULT: "hsl(var(--citation))",
+          foreground: "hsl(var(--citation-foreground))",
+        },
+        disclaimer: {
+          DEFAULT: "hsl(var(--disclaimer))",
+          foreground: "hsl(var(--disclaimer-foreground))",
+        },
+      },
+      maxWidth: {
+        'chat': 'var(--max-width-chat)',
+      },
+      height: {
+        'chat-input': 'var(--chat-input-height)',
+      },
+      boxShadow: {
+        'soft': 'var(--shadow-soft)',
+        'medium': 'var(--shadow-medium)',
+        'strong': 'var(--shadow-strong)',
+      },
+      transitionTimingFunction: {
+        'smooth': 'var(--transition-smooth)',
+        'bounce': 'var(--transition-bounce)',
       },
       borderRadius: {
         lg: "var(--radius)",

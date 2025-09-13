@@ -1,12 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { SplashScreen } from '@/components/SplashScreen';
+import { Header } from '@/components/Header';
+import { Sidebar } from '@/components/Sidebar';
+import { ChatInterface } from '@/components/ChatInterface';
 
 const Index = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  const handleMenuClick = () => {
+    setSidebarOpen(true);
+  };
+
+  const handleSidebarClose = () => {
+    setSidebarOpen(false);
+  };
+
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <Header onMenuClick={handleMenuClick} />
+      
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} onClose={handleSidebarClose} />
+      
+      {/* Main Content */}
+      <main className="pt-16 min-h-screen flex items-center justify-center">
+        <ChatInterface />
+      </main>
     </div>
   );
 };

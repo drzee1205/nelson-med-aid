@@ -1,96 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Nelson-GPT Design System - Medical AI Interface */
 
 @layer base {
   :root {
+    /* Morphic.sh-inspired color palette */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 218 11% 9.4%;
+    
+    /* Medical accent colors */
+    --medical-primary: 217 91% 59.8%;
+    --medical-primary-foreground: 0 0% 100%;
+    --medical-secondary: 217 32% 94%;
+    --medical-secondary-foreground: 218 11% 9.4%;
+    
+    /* Morphic interface colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 218 11% 9.4%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 218 11% 9.4%;
+    
+    --primary: 218 11% 9.4%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 220 9% 96%;
+    --secondary-foreground: 218 11% 9.4%;
+    
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    
+    --accent: 217 91% 59.8%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 217 91% 59.8%;
+    
+    --radius: 0.75rem;
+    
+    /* Medical interface specific */
+    --citation: 39 77% 55%;
+    --citation-foreground: 0 0% 100%;
+    --disclaimer: 25 95% 53%;
+    --disclaimer-foreground: 0 0% 100%;
+    
+    /* Animations and transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Shadows for medical interface */
+    --shadow-soft: 0 2px 16px rgba(0, 0, 0, 0.06);
+    --shadow-medium: 0 4px 24px rgba(0, 0, 0, 0.1);
+    --shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.15);
+    
+    /* Layout constraints */
+    --max-width-chat: 600px;
+    --chat-input-height: 64px;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 218 11% 4.9%;
+    --foreground: 0 0% 98%;
+    
+    --medical-primary: 217 91% 69.8%;
+    --medical-primary-foreground: 218 11% 4.9%;
+    
+    --card: 218 11% 4.9%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 218 11% 4.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 0 0% 98%;
+    --primary-foreground: 218 11% 9.4%;
+    
+    --secondary: 218 11% 10%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 218 11% 10%;
+    --muted-foreground: 220 9% 65%;
+    
+    --accent: 217 91% 69.8%;
+    --accent-foreground: 218 11% 4.9%;
+    
+    --border: 218 11% 15%;
+    --input: 218 11% 15%;
+    --ring: 217 91% 69.8%;
+  }
+}
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+@layer components {
+  /* Medical typography */
+  .medical-heading {
+    @apply text-2xl font-semibold tracking-tight text-foreground;
+  }
+  
+  .medical-subheading {
+    @apply text-lg font-medium text-muted-foreground;
+  }
+  
+  .citation-text {
+    @apply text-sm font-medium text-citation bg-citation/10 px-2 py-1 rounded-md;
+  }
+  
+  /* Chat interface styles */
+  .chat-container {
+    @apply mx-auto max-w-[var(--max-width-chat)] px-6 py-8;
+  }
+  
+  .chat-input {
+    @apply h-[var(--chat-input-height)] w-full rounded-2xl border bg-background px-6 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-[border-color,box-shadow] duration-200;
+    box-shadow: var(--shadow-soft);
+  }
+  
+  /* Splash screen animations */
+  .typing-animation {
+    @apply relative overflow-hidden;
+  }
+  
+  .typing-animation::after {
+    content: '';
+    @apply absolute top-0 right-0 w-1 h-full bg-accent animate-pulse;
+  }
+  
+  /* Medical UI components */
+  .medical-card {
+    @apply bg-card border rounded-xl p-6;
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .medical-badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-medical-secondary text-medical-secondary-foreground;
+  }
+  
+  /* Button variants for medical interface */
+  .btn-medical-primary {
+    @apply bg-medical-primary text-medical-primary-foreground hover:bg-medical-primary/90 border-0;
+  }
+  
+  .btn-medical-secondary {
+    @apply bg-medical-secondary text-medical-secondary-foreground hover:bg-medical-secondary/80 border border-border;
+  }
+  
+  /* Loading and animation utilities */
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .bounce-in {
+    animation: bounceIn 0.6s var(--transition-bounce);
+  }
+}
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
   }
 }
 
