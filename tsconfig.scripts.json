@@ -4,7 +4,8 @@
     "target": "ES2020",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "outDir": "./scripts",
+    "outDir": "./dist/scripts",
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
