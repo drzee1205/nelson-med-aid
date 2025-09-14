@@ -51,7 +51,7 @@ class OrchestrationEngine {
       return state.isAuthenticated ? 'get_context' : 'handle_error';
     });
     this.workflow.addEdge('get_context', 'route_query');    
-
+    
     this.workflow.addConditionalEdges('route_query', (state: AppState) => {      
       if (state.error) {
         return 'handle_error';

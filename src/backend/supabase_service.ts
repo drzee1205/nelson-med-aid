@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
-
+import CryptoJS from 'crypto-js';
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default-secret-key';
 export interface MedicalChunk {
   id?: string;
   book_title: string;
@@ -53,7 +54,7 @@ export class SupabaseService {
     return data;
   }
 
-  async getMedicalChunks(embedding: number[], keywords: string, match_count: number) { 
+  async getMedicalChunks(embedding: number[], keywords: string, match_count: number) {
     // Assume RLS is enabled, so this is secure
     const { data, error } = await supabase.rpc('match_medical_chunks', {
       query_embedding: embedding,
@@ -69,7 +70,7 @@ export class SupabaseService {
     return data;
   }
 
-  async storeMedicalChunks(chunks: MedicalChunk[]) { 
+  async storeMedicalChunks(chunks: MedicalChunk[]) {
     const { data, error } = await supabase.from('medical_chunks').insert(chunks);
 
     if (error) {
@@ -80,7 +81,7 @@ export class SupabaseService {
     return data;
   }
 
-  async getConversationHistory(sessionId: string) { 
+  async getConversationHistory(sessionId: string) {
     const { data, error } = await supabase
       .from('user_sessions')
       .select('medical_context')
@@ -92,10 +93,11 @@ export class SupabaseService {
       return null;
     }
 
-    return data?.medical_context;
+    return this.decryptData(data?.medical_context);
   }
 
-  async storeConversationHistory(sessionId: string, history: any) { 
+  async storeConversationHistory(sessionId: string, history: any) {
+    const encryptedHistory = this.encryptData(history);
     const { data, error } = await supabase
       .from('user_sessions')
       .update({ medical_context: history })
@@ -109,7 +111,7 @@ export class SupabaseService {
     return data;
   }
 
-  async getDiagnosticWorkflow(workflowId: string) { 
+  async getDiagnosticWorkflow(workflowId: string) {
     const { data, error } = await supabase.from('diagnostic_workflows').select('*').eq('id', workflowId).single();
 
     if (error) {
@@ -120,7 +122,7 @@ export class SupabaseService {
     return data;
   }
 
-  async createDiagnosticWorkflow(workflowData: Omit<DiagnosticWorkflow, 'id'>) { 
+  async createDiagnosticWorkflow(workflowData: Omit<DiagnosticWorkflow, 'id'>) {
     const { data, error } = await supabase.from('diagnostic_workflows').insert(workflowData).select().single();
 
     if (error) {
@@ -131,7 +133,7 @@ export class SupabaseService {
     return data;
   }
 
-  async updateDiagnosticWorkflow(workflowId: string, updates: Partial<DiagnosticWorkflow>) { 
+  async updateDiagnosticWorkflow(workflowId: string, updates: Partial<DiagnosticWorkflow>) {
     const { data, error } = await supabase.from('diagnostic_workflows').update(updates).eq('id', workflowId);
 
     if (error) {
@@ -148,16 +150,34 @@ export class SupabaseService {
       console.error('Error fetching patient context:', error);
       return null;
     }
-    return data?.patient_context;
+    return this.decryptData(data?.patient_context);
   }
 
   async storePatientContext(sessionId: string, context: any) {
-    const { data, error } = await supabase.from('user_sessions').update({ patient_context: context }).eq('id', sessionId);
+    const encryptedContext = this.encryptData(context);
+    const { data, error } = await supabase.from('user_sessions').update({ patient_context: encryptedContext }).eq('id', sessionId);
     if (error) {
       console.error('Error storing patient context:', error);
     }
     return data;
   }
+
+  private encryptData(data: any): string {
+    if (!data) return data;
+    return CryptoJS.AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString();
+  }
+
+  private decryptData(data: any): any {
+    if (!data || typeof data !== 'string') return data;
+    try {
+      const bytes = CryptoJS.AES.decrypt(data, ENCRYPTION_KEY);
+      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      return data; // Return original data if decryption fails
+    }
+  }
 }
 
 export const supabaseService = new SupabaseService();
+
