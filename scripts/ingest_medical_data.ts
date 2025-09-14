@@ -1,5 +1,5 @@
-import { supabaseService, MedicalChunk } from '../src/backend/supabase_service';
-import { llmService } from '../src/backend/llm_service';
+import { supabaseService, MedicalChunk } from '../src/backend/supabase_service.js';
+import { llmService } from '../src/backend/llm_service.js';
 import dotenv from 'dotenv';
 import path from 'path';
 
