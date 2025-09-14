@@ -46,13 +46,13 @@ export interface AuditLog {
 }
 
 export class SupabaseService {
-  async logAuditEvent(log: Omit<AuditLog, 'id' | 'created_at'>) {
-    const { data, error } = await supabase.from('audit_logs').insert(log);
-    if (error) {
-      console.error('Error logging audit event:', error);
-    }
-    return data;
-  }
+  // async logAuditEvent(log: Omit<AuditLog, 'id' | 'created_at'>) {
+  //   const { data, error } = await supabase.from('audit_logs').insert(log);
+  //   if (error) {
+  //     console.error('Error logging audit event:', error);
+  //   }
+  //   return data;
+  // }
 
   async getMedicalChunks(embedding: number[], keywords: string, match_count: number) {
     // Assume RLS is enabled, so this is secure
