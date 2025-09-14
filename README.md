@@ -1,56 +1,58 @@
-# Welcome to your Lovable project
+# Nelson-GPT: Pediatric Medical AI Assistant
 
-## Project info
+## Environment Setup
 
-**URL**: https://lovable.dev/projects/4c8f2752-5fa2-4ab0-a299-6a8e5e402d45
+### Local Development
+To set up the project for local development, follow these steps:
+1.  **Clone the repository:**
+    ```sh
+    git clone <YOUR_GIT_URL>
+    cd <YOUR_PROJECT_NAME>
+    ```
+2.  **Install dependencies:**
+    ```sh
+    npm i
+    ```
+3.  **Set up environment variables:**
+    Create a `.env` file in the root directory and add the following variables:
+    ```
+    MISTRAL_API_KEY="your_mistral_api_key"
+    SUPABASE_URL="your_supabase_project_url"
+    SUPABASE_PUBLISHABLE_KEY="your_supabase_publishable_key"
+    ENCRYPTION_KEY="your_encryption_key"
+    ```
+4.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
 
-## How can I edit this code?
+### Supabase CLI Setup
+To manage the Supabase backend, you will need to use the Supabase CLI.
+1.  **Install the Supabase CLI:**
+    Follow the official instructions to install the CLI on your system: [Supabase CLI Docs](https://supabase.com/docs/guides/cli)
+2.  **Log in to Supabase:**
+    ```sh
+    supabase login
+    ```
+3.  **Link the project:**
+    ```sh
+    supabase link --project-ref <YOUR_PROJECT_ID>
+    ```
+4.  **Apply database migrations:**
+    ```sh
+    supabase db push
+    ```
 
-There are several ways of editing your application.
+## Environment Variables
 
-**Use Lovable**
+*   `MISTRAL_API_KEY`: Your API key for the Mistral service.
+*   `SUPABASE_URL`: The URL of your Supabase project.
+*   `SUPABASE_PUBLISHABLE_KEY`: The public, anonymous key for your Supabase project.
+*   `ENCRYPTION_KEY`: A secret key used for encrypting patient data.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4c8f2752-5fa2-4ab0-a299-6a8e5e402d45) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## Technologies Used
 
 This project is built with:
 
@@ -60,14 +62,5 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/4c8f2752-5fa2-4ab0-a299-6a8e5e402d45) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
