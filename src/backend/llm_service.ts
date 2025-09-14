@@ -12,7 +12,7 @@ interface LlmResponse {
 }
 
 class LlmService {
-  private async generateEmbedding(text: string): Promise<number[]> {
+  public async generateEmbedding(text: string): Promise<number[]> {
     try {
       const response = await fetch(MISTRAL_EMBEDDING_API_URL, {
         method: 'POST',
