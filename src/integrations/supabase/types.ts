@@ -38,6 +38,66 @@ export type Database = {
         }
         Relationships: []
       }
+      diagnostic_workflows: {
+        Row: {
+          completed_at: string | null
+          completed_steps: string[] | null
+          confidence_scores: Json | null
+          created_at: string | null
+          current_step: number | null
+          id: string
+          query_id: number | null
+          session_id: string | null
+          step_data: Json | null
+          total_steps: number | null
+          updated_at: string | null
+          workflow_type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_steps?: string[] | null
+          confidence_scores?: Json | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          query_id?: number | null
+          session_id?: string | null
+          step_data?: Json | null
+          total_steps?: number | null
+          updated_at?: string | null
+          workflow_type?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_steps?: string[] | null
+          confidence_scores?: Json | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          query_id?: number | null
+          session_id?: string | null
+          step_data?: Json | null
+          total_steps?: number | null
+          updated_at?: string | null
+          workflow_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_workflows_query_id_fkey"
+            columns: ["query_id"]
+            isOneToOne: false
+            referencedRelation: "queries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_workflows_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "user_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       godzilla_medical_dataset: {
         Row: {
           age_groups: string | null
@@ -233,6 +293,97 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_classifications: {
+        Row: {
+          auto_classified: boolean | null
+          classification_confidence: number | null
+          complexity_score: number | null
+          created_at: string | null
+          id: string
+          medical_specialty: string | null
+          query_id: number | null
+          reviewed_by: string | null
+          urgency_level: string
+        }
+        Insert: {
+          auto_classified?: boolean | null
+          classification_confidence?: number | null
+          complexity_score?: number | null
+          created_at?: string | null
+          id?: string
+          medical_specialty?: string | null
+          query_id?: number | null
+          reviewed_by?: string | null
+          urgency_level: string
+        }
+        Update: {
+          auto_classified?: boolean | null
+          classification_confidence?: number | null
+          complexity_score?: number | null
+          created_at?: string | null
+          id?: string
+          medical_specialty?: string | null
+          query_id?: number | null
+          reviewed_by?: string | null
+          urgency_level?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_classifications_query_id_fkey"
+            columns: ["query_id"]
+            isOneToOne: false
+            referencedRelation: "queries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_context_summary: {
+        Row: {
+          allergies_mentioned: string[] | null
+          created_at: string | null
+          id: string
+          key_symptoms: string[] | null
+          medications_mentioned: string[] | null
+          previous_diagnoses: string[] | null
+          session_id: string | null
+          summary_confidence: number | null
+          summary_text: string
+          updated_at: string | null
+        }
+        Insert: {
+          allergies_mentioned?: string[] | null
+          created_at?: string | null
+          id?: string
+          key_symptoms?: string[] | null
+          medications_mentioned?: string[] | null
+          previous_diagnoses?: string[] | null
+          session_id?: string | null
+          summary_confidence?: number | null
+          summary_text: string
+          updated_at?: string | null
+        }
+        Update: {
+          allergies_mentioned?: string[] | null
+          created_at?: string | null
+          id?: string
+          key_symptoms?: string[] | null
+          medications_mentioned?: string[] | null
+          previous_diagnoses?: string[] | null
+          session_id?: string | null
+          summary_confidence?: number | null
+          summary_text?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_context_summary_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "user_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_entities: {
         Row: {
           chunk_id: string | null
@@ -272,40 +423,61 @@ export type Database = {
         Row: {
           answer: string | null
           citations: string[] | null
+          complexity_score: number | null
           confidence: number | null
           created_at: string | null
+          diagnostic_stage: string | null
+          differential_diagnoses: Json | null
           id: number
           latency_ms: number | null
+          medical_specialty: string | null
           meta: Json | null
           model: string | null
+          reasoning_steps: Json | null
+          safety_flags: string[] | null
           session_id: string | null
           token_count: number | null
+          urgency_level: string | null
           user_question: string
         }
         Insert: {
           answer?: string | null
           citations?: string[] | null
+          complexity_score?: number | null
           confidence?: number | null
           created_at?: string | null
+          diagnostic_stage?: string | null
+          differential_diagnoses?: Json | null
           id?: number
           latency_ms?: number | null
+          medical_specialty?: string | null
           meta?: Json | null
           model?: string | null
+          reasoning_steps?: Json | null
+          safety_flags?: string[] | null
           session_id?: string | null
           token_count?: number | null
+          urgency_level?: string | null
           user_question: string
         }
         Update: {
           answer?: string | null
           citations?: string[] | null
+          complexity_score?: number | null
           confidence?: number | null
           created_at?: string | null
+          diagnostic_stage?: string | null
+          differential_diagnoses?: Json | null
           id?: number
           latency_ms?: number | null
+          medical_specialty?: string | null
           meta?: Json | null
           model?: string | null
+          reasoning_steps?: Json | null
+          safety_flags?: string[] | null
           session_id?: string | null
           token_count?: number | null
+          urgency_level?: string | null
           user_question?: string
         }
         Relationships: [
@@ -318,25 +490,94 @@ export type Database = {
           },
         ]
       }
+      safety_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_message: string
+          alert_type: string
+          created_at: string | null
+          id: string
+          query_id: number | null
+          session_id: string | null
+          severity_score: number | null
+          triggered_keywords: string[] | null
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_message: string
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          query_id?: number | null
+          session_id?: string | null
+          severity_score?: number | null
+          triggered_keywords?: string[] | null
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_message?: string
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          query_id?: number | null
+          session_id?: string | null
+          severity_score?: number | null
+          triggered_keywords?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "safety_alerts_query_id_fkey"
+            columns: ["query_id"]
+            isOneToOne: false
+            referencedRelation: "queries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "safety_alerts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "user_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_sessions: {
         Row: {
           ended_at: string | null
           id: string
+          medical_context: Json | null
           meta: Json | null
+          patient_context: Json | null
+          risk_level: string | null
+          specialty_focus: string | null
           started_at: string | null
           user_sub: string
         }
         Insert: {
           ended_at?: string | null
           id?: string
+          medical_context?: Json | null
           meta?: Json | null
+          patient_context?: Json | null
+          risk_level?: string | null
+          specialty_focus?: string | null
           started_at?: string | null
           user_sub: string
         }
         Update: {
           ended_at?: string | null
           id?: string
+          medical_context?: Json | null
           meta?: Json | null
+          patient_context?: Json | null
+          risk_level?: string | null
+          specialty_focus?: string | null
           started_at?: string | null
           user_sub?: string
         }
