@@ -36,8 +36,25 @@ export interface PatientContext {
   context: any;
 }
 
+export interface AuditLog {
+  id?: string;
+  session_id: string;
+  event_type: string;
+  event_details: any;
+  created_at?: string;
+}
+
 export class SupabaseService {
-  async getMedicalChunks(embedding: number[], keywords: string, match_count: number) {
+  async logAuditEvent(log: Omit<AuditLog, 'id' | 'created_at'>) {
+    const { data, error } = await supabase.from('audit_logs').insert(log);
+    if (error) {
+      console.error('Error logging audit event:', error);
+    }
+    return data;
+  }
+
+  async getMedicalChunks(embedding: number[], keywords: string, match_count: number) { 
+    // Assume RLS is enabled, so this is secure
     const { data, error } = await supabase.rpc('match_medical_chunks', {
       query_embedding: embedding,
       keywords: keywords,
@@ -52,7 +69,7 @@ export class SupabaseService {
     return data;
   }
 
-  async storeMedicalChunks(chunks: MedicalChunk[]) {
+  async storeMedicalChunks(chunks: MedicalChunk[]) { 
     const { data, error } = await supabase.from('medical_chunks').insert(chunks);
 
     if (error) {
@@ -63,7 +80,7 @@ export class SupabaseService {
     return data;
   }
 
-  async getConversationHistory(sessionId: string) {
+  async getConversationHistory(sessionId: string) { 
     const { data, error } = await supabase
       .from('user_sessions')
       .select('medical_context')
@@ -78,7 +95,7 @@ export class SupabaseService {
     return data?.medical_context;
   }
 
-  async storeConversationHistory(sessionId: string, history: any) {
+  async storeConversationHistory(sessionId: string, history: any) { 
     const { data, error } = await supabase
       .from('user_sessions')
       .update({ medical_context: history })
@@ -92,7 +109,7 @@ export class SupabaseService {
     return data;
   }
 
-  async getDiagnosticWorkflow(workflowId: string) {
+  async getDiagnosticWorkflow(workflowId: string) { 
     const { data, error } = await supabase.from('diagnostic_workflows').select('*').eq('id', workflowId).single();
 
     if (error) {
@@ -103,7 +120,7 @@ export class SupabaseService {
     return data;
   }
 
-  async createDiagnosticWorkflow(workflowData: Omit<DiagnosticWorkflow, 'id'>) {
+  async createDiagnosticWorkflow(workflowData: Omit<DiagnosticWorkflow, 'id'>) { 
     const { data, error } = await supabase.from('diagnostic_workflows').insert(workflowData).select().single();
 
     if (error) {
@@ -114,10 +131,33 @@ export class SupabaseService {
     return data;
   }
 
-  async updateDiagnosticWorkflow(workflowId: string, updates: Partial<DiagnosticWorkflow>) {
+  async updateDiagnosticWorkflow(workflowId: string, updates: Partial<DiagnosticWorkflow>) { 
     const { data, error } = await supabase.from('diagnostic_workflows').update(updates).eq('id', workflowId);
 
     if (error) {
       console.error('Error updating diagnostic workflow:', error);
       return null;
     }
+
+    return data;
+  }
+
+  async getPatientContext(sessionId: string) {
+    const { data, error } = await supabase.from('user_sessions').select('patient_context').eq('id', sessionId).single();
+    if (error) {
+      console.error('Error fetching patient context:', error);
+      return null;
+    }
+    return data?.patient_context;
+  }
+
+  async storePatientContext(sessionId: string, context: any) {
+    const { data, error } = await supabase.from('user_sessions').update({ patient_context: context }).eq('id', sessionId);
+    if (error) {
+      console.error('Error storing patient context:', error);
+    }
+    return data;
+  }
+}
+
+export const supabaseService = new SupabaseService();

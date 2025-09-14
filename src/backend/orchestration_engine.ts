@@ -5,6 +5,7 @@ import { diagnosticWorkflow } from './diagnostic_workflows';
 
 interface AppState {
   sessionId: string;
+  isAuthenticated: boolean;
   query: string;
   urgency?: 'emergency' | 'urgent' | 'routine';
   specialty?: 'cardiology' | 'neurology' | 'general pediatrics';
@@ -21,6 +22,7 @@ class OrchestrationEngine {
     this.workflow = new StateGraph({
       channels: {
         sessionId: { value: (x, y) => y, default: () => '' },
+        isAuthenticated: { value: (x, y) => y, default: () => false },
         query: { value: (x, y) => y, default: () => '' },
         urgency: { value: (x, y) => y, default: () => 'routine' },
         specialty: { value: (x, y) => y, default: () => 'general pediatrics' },
@@ -35,6 +37,7 @@ class OrchestrationEngine {
   }
 
   private initializeWorkflow() {
+    this.workflow.addNode('check_auth', this.checkAuth.bind(this));
     this.workflow.addNode('get_context', this.getContext.bind(this));
     this.workflow.addNode('route_query', this.routeQuery.bind(this));
     this.workflow.addNode('handle_general_pediatrics', this.handleGeneralPediatrics.bind(this));
@@ -43,13 +46,19 @@ class OrchestrationEngine {
     this.workflow.addNode('handle_error', this.handleError.bind(this));
     this.workflow.addNode('update_context', this.updateContext.bind(this));
 
-    this.workflow.setEntryPoint('get_context');
-    this.workflow.addEdge('get_context', 'route_query');
+    this.workflow.setEntryPoint('check_auth');
+    this.workflow.addConditionalEdges('check_auth', (state: AppState) => {
+      return state.isAuthenticated ? 'get_context' : 'handle_error';
+    });
+    this.workflow.addEdge('get_context', 'route_query');    
 
     this.workflow.addConditionalEdges('route_query', (state: AppState) => {      
       if (state.error) {
         return 'handle_error';
       }
+
+      supabaseService.logAuditEvent({ session_id: state.sessionId, event_type: 'query_routed', event_details: { specialty: state.specialty } });
+
       switch (state.specialty) {
         case 'cardiology':
           return 'handle_cardiology';
@@ -65,6 +74,16 @@ class OrchestrationEngine {
     this.workflow.addEdge('handle_neurology', 'update_context');
     this.workflow.addEdge('handle_error', END);
     this.workflow.addEdge('update_context', END);
+  }
+
+  private async checkAuth(state: AppState): Promise<Partial<AppState>> {
+    // This is a placeholder for actual authentication logic.
+    // In a real app, you'd validate a JWT or session cookie.
+    const isAuthenticated = !!state.sessionId; 
+    if (!isAuthenticated) {
+      return { isAuthenticated: false, error: 'Authentication failed.' };
+    }
+    return { isAuthenticated: true };
   }
 
   private async getContext(state: AppState): Promise<Partial<AppState>> {
@@ -124,9 +143,10 @@ class OrchestrationEngine {
 
   public async execute(sessionId: string, query: string) {
     const app = this.workflow.compile();
-    const result = await app.invoke({ sessionId, query });
+    const result = await app.invoke({ sessionId, query, isAuthenticated: false });
     return result;
   }
 }
 
 export const orchestrationEngine = new OrchestrationEngine();
+
