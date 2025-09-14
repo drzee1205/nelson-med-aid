@@ -71,11 +71,12 @@ export class SupabaseService {
   }
 
   async storeMedicalChunks(chunks: MedicalChunk[]) {
-    const chunksWithJsonEmbeddings = chunks.map(chunk => ({
+    const chunksToInsert = chunks.map(chunk => ({
       ...chunk,
       embedding: JSON.stringify(chunk.embedding),
-    }));
-    const { data, error } = await supabase.from('medical_chunks').insert(chunksWithJsonEmbeddings);
+    // The 'id' field is optional, so we remove it if it's not set
+    })) as any[];
+    const { data, error } = await supabase.from('medical_chunks').insert(chunksToInsert);
 
     if (error) {
       console.error('Error storing medical chunks:', error);
@@ -196,5 +197,6 @@ export const supabaseService = new SupabaseService();
 //   }
 //   return data.disclaimer_text;
 // };
+
 
 
