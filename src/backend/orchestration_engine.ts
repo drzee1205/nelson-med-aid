@@ -1,11 +1,15 @@
 import { StateGraph, END } from '@langchain/langgraph';
 import { llmService } from './llm_service';
+import { supabaseService } from './supabase_service';
+import { diagnosticWorkflow } from './diagnostic_workflows';
 
 interface AppState {
+  sessionId: string;
   query: string;
   urgency?: 'emergency' | 'urgent' | 'routine';
   specialty?: 'cardiology' | 'neurology' | 'general pediatrics';
   complexity?: 'simple' | 'complex';
+  history?: any;
   result?: any;
   error?: string;
 }
@@ -16,10 +20,12 @@ class OrchestrationEngine {
   constructor() {
     this.workflow = new StateGraph({
       channels: {
+        sessionId: { value: (x, y) => y, default: () => '' },
         query: { value: (x, y) => y, default: () => '' },
         urgency: { value: (x, y) => y, default: () => 'routine' },
         specialty: { value: (x, y) => y, default: () => 'general pediatrics' },
         complexity: { value: (x, y) => y, default: () => 'simple' },
+        history: { value: (x, y) => y, default: () => ({}) },
         result: { value: (x, y) => y, default: () => null },
         error: { value: (x, y) => y, default: () => undefined },
       },
@@ -29,15 +35,18 @@ class OrchestrationEngine {
   }
 
   private initializeWorkflow() {
+    this.workflow.addNode('get_context', this.getContext.bind(this));
     this.workflow.addNode('route_query', this.routeQuery.bind(this));
     this.workflow.addNode('handle_general_pediatrics', this.handleGeneralPediatrics.bind(this));
     this.workflow.addNode('handle_cardiology', this.handleCardiology.bind(this));
     this.workflow.addNode('handle_neurology', this.handleNeurology.bind(this));
     this.workflow.addNode('handle_error', this.handleError.bind(this));
+    this.workflow.addNode('update_context', this.updateContext.bind(this));
 
-    this.workflow.setEntryPoint('route_query');
+    this.workflow.setEntryPoint('get_context');
+    this.workflow.addEdge('get_context', 'route_query');
 
-    this.workflow.addConditionalEdges('route_query', (state: AppState) => {
+    this.workflow.addConditionalEdges('route_query', (state: AppState) => {      
       if (state.error) {
         return 'handle_error';
       }
@@ -51,16 +60,26 @@ class OrchestrationEngine {
       }
     });
 
-    this.workflow.addEdge('handle_general_pediatrics', END);
-    this.workflow.addEdge('handle_cardiology', END);
-    this.workflow.addEdge('handle_neurology', END);
+    this.workflow.addEdge('handle_general_pediatrics', 'update_context');
+    this.workflow.addEdge('handle_cardiology', 'update_context');
+    this.workflow.addEdge('handle_neurology', 'update_context');
     this.workflow.addEdge('handle_error', END);
+    this.workflow.addEdge('update_context', END);
+  }
+
+  private async getContext(state: AppState): Promise<Partial<AppState>> {
+    const { sessionId } = state;
+    const history = await supabaseService.getConversationHistory(sessionId);
+    const patientContext = await supabaseService.getPatientContext(sessionId);
+    return { history: { ...history, patientContext } };
   }
 
   private async routeQuery(state: AppState): Promise<Partial<AppState>> {
     try {
-      const { query } = state;
-      const response = await llmService.generateResponse(`Classify the following query into urgency, specialty, and complexity: "${query}"`, {});
+      const { query, history } = state;
+      const response = await llmService.generateResponse(
+        `Classify the following query into urgency, specialty, and complexity: "${query}"`, history
+      );
       
       if (!response.success) {
         return { error: 'Failed to classify query.' };
@@ -77,15 +96,25 @@ class OrchestrationEngine {
   }
 
   private async handleGeneralPediatrics(state: AppState): Promise<Partial<AppState>> {
-    return { result: 'Handling general pediatrics query.' };
+    const { query, history } = state;
+    const result = await diagnosticWorkflow.execute(query, history);
+    return { result };
   }
 
   private async handleCardiology(state: AppState): Promise<Partial<AppState>> {
+    // Placeholder for cardiology-specific workflow
     return { result: 'Handling cardiology query.' };
   }
 
   private async handleNeurology(state: AppState): Promise<Partial<AppState>> {
+    // Placeholder for neurology-specific workflow
     return { result: 'Handling neurology query.' };
+  }
+
+  private async updateContext(state: AppState): Promise<Partial<AppState>> {
+    const { sessionId, history, result } = state;
+    await supabaseService.storeConversationHistory(sessionId, { ...history, user: state.query, assistant: result });
+    return {};
   }
 
   private async handleError(state: AppState): Promise<Partial<AppState>> {
@@ -93,9 +122,11 @@ class OrchestrationEngine {
     return { result: `Error: ${state.error}` };
   }
 
-  public async execute(query: string) {
+  public async execute(sessionId: string, query: string) {
     const app = this.workflow.compile();
-    const result = await app.invoke({ query });
+    const result = await app.invoke({ sessionId, query });
     return result;
   }
 }
+
+export const orchestrationEngine = new OrchestrationEngine();
