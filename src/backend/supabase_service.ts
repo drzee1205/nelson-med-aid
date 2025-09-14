@@ -46,17 +46,17 @@ export interface AuditLog {
 }
 
 export class SupabaseService {
-  async logAuditEvent(log: Omit<AuditLog, 'id' | 'created_at'>) {
-    const { data, error } = await supabase.from('audit_logs').insert(log);
-    if (error) {
-      console.error('Error logging audit event:', error);
-    }
-    return data;
-  }
+  // async logAuditEvent(log: Omit<AuditLog, 'id' | 'created_at'>) {
+  //   const { data, error } = await supabase.from('audit_logs').insert(log);
+  //   if (error) {
+  //     console.error('Error logging audit event:', error);
+  //   }
+  //   return data;
+  // }
 
   async getMedicalChunks(embedding: number[], keywords: string, match_count: number) {
     // Assume RLS is enabled, so this is secure
-    const { data, error } = await supabase.rpc('match_medical_chunks', {
+    const { data, error } = await supabase.rpc('match_medical_chunks' as any, {
       query_embedding: embedding,
       keywords: keywords,
       match_count: match_count,
@@ -71,7 +71,12 @@ export class SupabaseService {
   }
 
   async storeMedicalChunks(chunks: MedicalChunk[]) {
-    const { data, error } = await supabase.from('medical_chunks').insert(chunks);
+    const chunksToInsert = chunks.map(chunk => ({
+      ...chunk,
+      embedding: JSON.stringify(chunk.embedding),
+    // The 'id' field is optional, so we remove it if it's not set
+    })) as any[];
+    const { data, error } = await supabase.from('medical_chunks').insert(chunksToInsert);
 
     if (error) {
       console.error('Error storing medical chunks:', error);
@@ -181,16 +186,17 @@ export class SupabaseService {
 
 export const supabaseService = new SupabaseService();
 
-export const getDisclaimer = async () => {
-  const { data, error } = await supabase
-    .from('disclaimers')
-    .select('disclaimer_text')
-    .single();
-  if (error) {
-    console.error('Error fetching disclaimer:', error);
-    return 'Medical Information Disclaimer: This information is not a substitute for professional medical advice. Always consult with a healthcare provider for any health concerns.';
-  }
-  return data.disclaimer_text;
-};
+// export const getDisclaimer = async () => {
+//   const { data, error } = await supabase
+//     .from('disclaimers')
+//     .select('disclaimer_text')
+//     .single();
+//   if (error) {
+//     console.error('Error fetching disclaimer:', error);
+//     return 'Medical Information Disclaimer: This information is not a substitute for professional medical advice. Always consult with a healthcare provider for any health concerns.';
+//   }
+//   return data.disclaimer_text;
+// };
+
 
 
