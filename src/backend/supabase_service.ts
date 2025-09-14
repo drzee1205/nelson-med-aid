@@ -56,7 +56,7 @@ export class SupabaseService {
 
   async getMedicalChunks(embedding: number[], keywords: string, match_count: number) {
     // Assume RLS is enabled, so this is secure
-    const { data, error } = await supabase.rpc('match_medical_chunks', {
+    const { data, error } = await supabase.rpc('match_medical_chunks' as any, {
       query_embedding: embedding,
       keywords: keywords,
       match_count: match_count,
