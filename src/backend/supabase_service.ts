@@ -100,7 +100,7 @@ export class SupabaseService {
     const encryptedHistory = this.encryptData(history);
     const { data, error } = await supabase
       .from('user_sessions')
-      .update({ medical_context: history })
+      .update({ medical_context: encryptedHistory })
       .eq('id', sessionId);
 
     if (error) {
