@@ -181,3 +181,16 @@ export class SupabaseService {
 
 export const supabaseService = new SupabaseService();
 
+export const getDisclaimer = async () => {
+  const { data, error } = await supabase
+    .from('disclaimers')
+    .select('disclaimer_text')
+    .single();
+  if (error) {
+    console.error('Error fetching disclaimer:', error);
+    return 'Medical Information Disclaimer: This information is not a substitute for professional medical advice. Always consult with a healthcare provider for any health concerns.';
+  }
+  return data.disclaimer_text;
+};
+
+
