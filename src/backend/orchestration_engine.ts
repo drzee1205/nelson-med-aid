@@ -96,8 +96,8 @@ class OrchestrationEngine {
   }
 
   private async handleGeneralPediatrics(state: AppState): Promise<Partial<AppState>> {
-    const { query, history } = state;
-    const result = await diagnosticWorkflow.execute(query, history);
+    const { sessionId, query, history } = state;
+    const result = await diagnosticWorkflow.execute(sessionId, query, history);
     return { result };
   }
 
