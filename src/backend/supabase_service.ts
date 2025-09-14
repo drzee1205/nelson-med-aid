@@ -71,7 +71,11 @@ export class SupabaseService {
   }
 
   async storeMedicalChunks(chunks: MedicalChunk[]) {
-    const { data, error } = await supabase.from('medical_chunks').insert(chunks);
+    const chunksWithJsonEmbeddings = chunks.map(chunk => ({
+      ...chunk,
+      embedding: JSON.stringify(chunk.embedding),
+    }));
+    const { data, error } = await supabase.from('medical_chunks').insert(chunksWithJsonEmbeddings);
 
     if (error) {
       console.error('Error storing medical chunks:', error);
@@ -181,16 +185,16 @@ export class SupabaseService {
 
 export const supabaseService = new SupabaseService();
 
-export const getDisclaimer = async () => {
-  const { data, error } = await supabase
-    .from('disclaimers')
-    .select('disclaimer_text')
-    .single();
-  if (error) {
-    console.error('Error fetching disclaimer:', error);
-    return 'Medical Information Disclaimer: This information is not a substitute for professional medical advice. Always consult with a healthcare provider for any health concerns.';
-  }
-  return data.disclaimer_text;
-};
+// export const getDisclaimer = async () => {
+//   const { data, error } = await supabase
+//     .from('disclaimers')
+//     .select('disclaimer_text')
+//     .single();
+//   if (error) {
+//     console.error('Error fetching disclaimer:', error);
+//     return 'Medical Information Disclaimer: This information is not a substitute for professional medical advice. Always consult with a healthcare provider for any health concerns.';
+//   }
+//   return data.disclaimer_text;
+// };
 
 
