@@ -1,73 +1,43 @@
-# Welcome to your Lovable project
+## 🩺 Nelson-GPT: Pediatric Medical AI Assistant
 
-## Project info
+📖 Overview
 
-**URL**: https://lovable.dev/projects/4c8f2752-5fa2-4ab0-a299-6a8e5e402d45
+Nelson-GPT is a Progressive Web App (PWA) that replicates the clean, minimal interface of morphic.sh while integrating a Retrieval-Augmented Generation (RAG) pipeline for pediatric medicine.
+It provides healthcare professionals with evidence-based clinical support, powered by the Nelson Textbook of Pediatrics.
 
-## How can I edit this code?
+🚀 Designed for speed, accuracy, and trust, Nelson-GPT combines modern web tech with medical AI to deliver sub-3 second responses and reliable citations.
 
-There are several ways of editing your application.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4c8f2752-5fa2-4ab0-a299-6a8e5e402d45) and start prompting.
+## 🎯 Features
 
-Changes made via Lovable will be committed automatically to this repo.
+🔹 Pixel-perfect UI — morphic.sh design with pediatric medical branding
 
-**Use your preferred IDE**
+🔹 Evidence-based AI — RAG pipeline with citation tracking
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+🔹 Offline-ready PWA — installable, cache-first, and background sync
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+🔹 Medical tools — dosing calculator, growth charts, vaccination schedules
 
-Follow these steps:
+🔹 Interactive chat — markdown support, citations, source previews
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+🔹 User management — auth, chat history, export (Markdown/PDF)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+🔹 Accessibility & performance — WCAG 2.1 AA, Lighthouse 90+
 
-# Step 3: Install the necessary dependencies.
-npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🏗️ Architecture
 
-**Use GitHub Codespaces**
+Backend
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Supabase (Postgres + pgvector) for embeddings & chat history
 
-## What technologies are used for this project?
+LangChain / LangGraph for orchestration
 
-This project is built with:
+Mistral API for reasoning engine
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/4c8f2752-5fa2-4ab0-a299-6a8e5e402d45) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+RESTful API endpoints with rate limiting
