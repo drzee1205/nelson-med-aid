@@ -1,1 +1,16 @@
 project_id = "bnjthwrpigvchbhsmfec"
+
+[functions.nelson-gpt-api]
+verify_jwt = false
+
+[functions.medical-query-router]
+verify_jwt = false
+
+[functions.diagnostic-reasoning]
+verify_jwt = false
+
+[functions.medical-safety-monitor]
+verify_jwt = false
+
+[functions.medical-context-manager]
+verify_jwt = false
